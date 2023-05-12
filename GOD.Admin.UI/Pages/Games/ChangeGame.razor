@@ -1,0 +1,127 @@
+﻿@inject IAdminService AdminService
+
+<div class="d-flex justify-content-center">
+	<EditForm Model="@Model" OnValidSubmit="@OnFormSubmit" class="mb-5 border border-1 border-secondary p-2 w-25">
+		<DataAnnotationsValidator />
+		<h4>@Page Games</h4>
+		<div class="mb-3">
+			@if (Page.Equals(PageType.Delete))
+			{
+				<InputText id="title" class="form-control me-2" @bind-Value="Model.Title" disabled placeholder="Title"></InputText>
+			}
+			else
+			{
+				<InputText id="title" class="form-control me-2" @bind-Value="Model.Title" placeholder="Title"></InputText>
+			}
+			<ValidationMessage For="@(() => Model.Title)" />
+		</div>
+		@if (!Page.Equals(PageType.Delete))
+		{
+			<div class="mb-3">
+				<InputText id="description" class="form-control me-2" @bind-Value="Model.Description" placeholder="Description"></InputText>
+				<ValidationMessage For="@(() => Model.Description)" />
+			</div>
+			<div class="mb-3">
+				<InputText id="GameUrl" class="form-control me-2" @bind-Value="Model.GameUrl" placeholder="Game Url"></InputText>
+				<ValidationMessage For="@(() => Model.GameUrl)" />
+			</div>
+			<div class="mb-3">
+				<h5>Releaseday:</h5>
+				<InputDate id="Released" class="form-control me-2" @bind-Value="Model.Released" TValue="DateTime" placeholder="Released"></InputDate>
+				<ValidationMessage For="@(() => Model.Released)" />
+			</div>
+			<div class="mb-3">
+				<h5>Hours to beat w/o extra content:</h5>
+				<InputNumber id="HowLongToBeat" class="form-control me-2" @bind-Value="Model.HowLongToBeat" placeholder="HowLongToBeat"></InputNumber>
+				<ValidationMessage For="@(() => Model.HowLongToBeat)" />
+			</div>
+			<div class="mb-3">
+				<h5>Free</h5>
+				<InputCheckbox @bind-Value="Model.Free" />
+			</div>
+			<InputSelect @bind-Value="Model.PublisherId" class="form-control mb-3">
+				<option value=0>Publisher ...</option>
+				@foreach (var publisher in Publishers)
+				{
+					<option value="@publisher.Id">@publisher.Name</option>
+				}
+			</InputSelect>
+			<div class="mb-3">
+				<ValidationMessage For="@(() => Model.Publisher)" />
+			</div>
+			<h5>Genres:</h5>
+			<InputSelect @bind-Value="selectedValues" class="form-control mb-3">
+				<option value=0>null</option>
+				@foreach (var genre in Genres)
+				{
+					<option value="@genre.Id">@genre.Name</option>
+				}
+			</InputSelect>
+			<div class="mb-3">
+				<ValidationMessage For="@(() => selectedValues)" />
+			</div>
+		}
+		<button type="submit" id="submit" class="btn btn-@(Page.Equals(PageType.Delete) ? "danger" : "primary") rounded-0">submit</button>
+	</EditForm>
+</div>
+@code {
+	[Parameter] public GameDTO Model { get; set; } = new();
+	[Parameter] public string Page { get; set; } = String.Empty;
+	[Parameter] public EventCallback<string> OnChange { get; set; }
+	GameGenreDTO gamegenre { get; set; } = new();
+	List<GameGenreDTO> gameGenres { get; set; } = new();
+	List<GameDTO> gameList { get; set; } = new();
+	List<PublisherDTO> Publishers { get; set; } = new();
+	List<GenreDTO> Genres { get; set; } = new();
+	EditContext? editContext { get; set; }
+	public int[] selectedValues { get; set; } = new int[] { };
+
+	protected override async Task OnInitializedAsync()
+	{
+		Publishers = await AdminService.GetAsync<PublisherDTO>("publisher");
+		editContext = new(selectedValues);
+		Genres = await AdminService.GetAsync<GenreDTO>("genres");
+	}
+
+	private async Task OnFormSubmit()
+	{
+		try
+		{
+			if (Page.Equals(PageType.Create))
+			{
+				Model.SelectedGenres = selectedValues;
+				await AdminService.CreateAsync<GameDTO>("game", Model);
+			}
+			else if (Page.Equals(PageType.Edit))
+			{
+				var gamegenres = await AdminService.GetAsync<GameGenreDTO>($"gamegenre");
+				foreach (var genre in gamegenres)
+				{
+					if (Model.Id == genre.GameId)
+					{
+						await AdminService.DeleteRefAsync<GameGenreDTO>($"gamegenre", genre);
+					}
+				}
+				Model.SelectedGenres = selectedValues;
+				await AdminService.EditAsync<GameDTO>($"game/{Model.Id}", Model);
+			}
+			else if (Page.Equals(PageType.Delete))
+			{
+				var gamegenres = await AdminService.GetAsync<GameGenreDTO>($"gamegenre");
+				foreach (var genre in gamegenres)
+				{
+					if (Model.Id == genre.GameId)
+					{
+						await AdminService.DeleteRefAsync<GameGenreDTO>($"gamegenre", genre);
+					}
+				}
+				await AdminService.DeleteAsync<GameDTO>($"game/{Model.Id}");
+			}
+			await OnChange.InvokeAsync("");
+		}
+		catch (Exception)
+		{
+			await OnChange.InvokeAsync("Couldn't create/edit/delete the game");
+		}
+	}
+}

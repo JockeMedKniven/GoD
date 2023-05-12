@@ -1,0 +1,70 @@
+﻿@inject IAdminService AdminService
+
+@if (!string.IsNullOrEmpty(Alert))
+{
+	<div class="d-flex">
+		<div class="alert alert-warning alert-dismissible fade show" role="alert">
+			<strong>@Alert</strong>
+			<button type="button" @onclick="CloseAlert" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	</div>
+}
+
+@if (Navigation == PageType.Create)
+{
+	<GenreChange Page="@Navigation" OnChange="OnChange"></GenreChange>
+}
+@if (Navigation == PageType.Delete || Navigation == PageType.Edit)
+{
+	<GenreChange Page="@Navigation" OnChange="OnChange" Model="Genre"></GenreChange>
+}
+
+<div class="d-flex me-1 btn-group" role="group" aria-label="Basic outlined example">
+	<button type="button" @onclick="()=>ChangePageType(PageType.Create)" class="btn btn-outline-primary rounded-0 me-1">Create</button>
+	<button type="button" @onclick="()=>ChangePageType(PageType.Index)" class="btn btn-outline-primary rounded-0 me-1">Index</button>
+</div>
+
+<GenreIndex OnClick="OnClick" Model="Model"></GenreIndex>
+
+@code {
+	string Navigation = PageType.Index;
+	string Alert = "";
+	List<GenreDTO> Model { get; set; } = new();
+	public GenreDTO Genre { get; set; } = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		Model = await AdminService.GetAsync<GenreDTO>($"Genres");
+	}
+
+	void ChangePageType(string pageType)
+	{
+		Navigation = pageType;
+	}
+
+	void CloseAlert()
+	{
+		Alert = "";
+	}
+	async Task OnClick(ClickModel model)
+	{
+		if (model.PageType.Equals(PageType.Edit) || model.PageType.Equals(PageType.Delete))
+			Genre = await AdminService.SingleAsync<GenreDTO>($"Genres/{model.Id}") ?? new();
+
+		ChangePageType(model.PageType);
+	}
+
+	async Task OnChange(string alert)
+	{
+		try
+		{
+			Alert = alert;
+			Model = await AdminService.GetAsync<GenreDTO>("Genres");
+			ChangePageType(PageType.Index);
+		}
+		catch (Exception)
+		{
+			Alert = "ERROR!";
+		}
+	}
+}

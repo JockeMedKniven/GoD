@@ -1,0 +1,36 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v7.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v7.0": {
+      "GOD.Admin.UI/1.0.0": {
+        "dependencies": {
+          "GOD.Common": "1.0.0"
+        },
+        "runtime": {
+          "GOD.Admin.UI.dll": {}
+        }
+      },
+      "GOD.Common/1.0.0": {
+        "runtime": {
+          "GOD.Common.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "GOD.Admin.UI/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "GOD.Common/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

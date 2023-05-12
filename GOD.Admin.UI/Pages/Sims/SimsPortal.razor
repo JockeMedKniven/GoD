@@ -1,0 +1,61 @@
+﻿@inject IAdminService AdminService
+
+@if (!string.IsNullOrEmpty(Alert))
+{
+	<div class="d-flex">
+		<div class="alert alert-warning alert-dismissible fade show" role="alert">
+			<strong>@Alert</strong>
+			<button type="button" @onclick="CloseAlert" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	</div>
+}
+
+@if (Navigation == PageType.Edit)
+{
+	<SimsChange Page="@Navigation" OnChange="OnChange" Model="Game"></SimsChange>
+}
+
+<SimsIndex OnClick="OnClick" Model="Model"></SimsIndex>
+
+@code {
+	string Navigation = PageType.Index;
+	string Alert = "";
+	List<GameDTO> Model { get; set; } = new();
+	public GameDTO Game { get; set; } = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		Model = await AdminService.GetAsync<GameDTO>($"game");
+	}
+
+	void ChangePageType(string pageType)
+	{
+		Navigation = pageType;
+	}
+
+	void CloseAlert()
+	{
+		Alert = "";
+	}
+	async Task OnClick(ClickModel model)
+	{
+		if (model.PageType.Equals(PageType.Edit))
+			Game = await AdminService.SingleAsync<GameDTO>($"game/{model.Id}") ?? new();
+
+		ChangePageType(model.PageType);
+	}
+
+	async Task OnChange(string alert)
+	{
+		try
+		{
+			Alert = alert;
+			Model = await AdminService.GetAsync<GameDTO>("game");
+			ChangePageType(PageType.Index);
+		}
+		catch (Exception)
+		{
+			Alert = "ERROR!";
+		}
+	}
+}

@@ -1,0 +1,17 @@
+C:\Users\joaki\Source\Repos\GamesOnDemand\GOD.Membership.Database\bin\Debug\net7.0\GOD.Membership.Database.deps.json
+C:\Users\joaki\Source\Repos\GamesOnDemand\GOD.Membership.Database\bin\Debug\net7.0\GOD.Membership.Database.runtimeconfig.json
+C:\Users\joaki\Source\Repos\GamesOnDemand\GOD.Membership.Database\bin\Debug\net7.0\GOD.Membership.Database.dll
+C:\Users\joaki\Source\Repos\GamesOnDemand\GOD.Membership.Database\bin\Debug\net7.0\GOD.Membership.Database.pdb
+C:\Users\joaki\Source\Repos\GamesOnDemand\GOD.Membership.Database\bin\Debug\net7.0\GOD.Common.dll
+C:\Users\joaki\Source\Repos\GamesOnDemand\GOD.Membership.Database\bin\Debug\net7.0\GOD.Common.pdb
+C:\Users\joaki\Source\Repos\GamesOnDemand\GOD.Membership.Database\obj\Debug\net7.0\GOD.Membership.Database.csproj.AssemblyReference.cache
+C:\Users\joaki\Source\Repos\GamesOnDemand\GOD.Membership.Database\obj\Debug\net7.0\GOD.Membership.Database.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\joaki\Source\Repos\GamesOnDemand\GOD.Membership.Database\obj\Debug\net7.0\GOD.Membership.Database.AssemblyInfoInputs.cache
+C:\Users\joaki\Source\Repos\GamesOnDemand\GOD.Membership.Database\obj\Debug\net7.0\GOD.Membership.Database.AssemblyInfo.cs
+C:\Users\joaki\Source\Repos\GamesOnDemand\GOD.Membership.Database\obj\Debug\net7.0\GOD.Membership.Database.csproj.CoreCompileInputs.cache
+C:\Users\joaki\Source\Repos\GamesOnDemand\GOD.Membership.Database\obj\Debug\net7.0\GOD.Membership.Database.csproj.CopyComplete
+C:\Users\joaki\Source\Repos\GamesOnDemand\GOD.Membership.Database\obj\Debug\net7.0\GOD.Membership.Database.dll
+C:\Users\joaki\Source\Repos\GamesOnDemand\GOD.Membership.Database\obj\Debug\net7.0\refint\GOD.Membership.Database.dll
+C:\Users\joaki\Source\Repos\GamesOnDemand\GOD.Membership.Database\obj\Debug\net7.0\GOD.Membership.Database.pdb
+C:\Users\joaki\Source\Repos\GamesOnDemand\GOD.Membership.Database\obj\Debug\net7.0\GOD.Membership.Database.genruntimeconfig.cache
+C:\Users\joaki\Source\Repos\GamesOnDemand\GOD.Membership.Database\obj\Debug\net7.0\ref\GOD.Membership.Database.dll

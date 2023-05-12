@@ -1,0 +1,11 @@
+﻿global using GOD.Admin.UI.Classes;
+global using GOD.Common.HttpClients;
+global using GOD.Common.Services;
+global using GOD.Common.Extensions;
+global using GOD.Common.DTOs;
+global using System;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System.Text;
+global using System.Text.Json;
+global using System.Threading.Tasks;

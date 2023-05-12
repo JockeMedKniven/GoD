@@ -1,0 +1,118 @@
+﻿@inject IAdminService AdminService
+
+<div class="d-flex justify-content-center">
+	<EditForm Model="@Model" OnValidSubmit="@OnFormSubmit" class="mb-5 border border-1 border-secondary p-2 w-25">
+		<DataAnnotationsValidator />
+		<h4>@Page Sims</h4>
+		<div class="mb-3">
+			@if (Page.Equals(PageType.Edit))
+			{
+				<InputText id="title" class="form-control me-2" @bind-Value="Model.Title" placeholder="Name"></InputText>
+				<div class=" mb-3">
+					<section>
+						<div class="form-check form-switch">
+							@foreach (var game in Model.SimilarGames)
+							{
+								SelectedValuesSimilar.Add(game.GameId);
+							}
+							@foreach (var game in Games)
+							{
+								if (SelectedValuesSimilar.Contains(game.Id))
+								{
+									<div>
+										<input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @onclick="()=> HandleSimilarFilm(Model.Id, game.Id)" checked />
+										<label class="form-check-label" for="flexSwitchCheckDefault">@game.Title</label>
+									</div>
+								}
+								else
+								{
+									<div>
+										<input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @onclick="()=>HandleSimilarFilm(Model.Id, game.Id)"  />
+										<label class="form-check-label" for="flexSwitchCheckDefault">@game.Title</label>
+									</div>
+								}
+							}
+						</div>
+					</section>
+					<DataAnnotationsValidator />
+					<ValidationSummary />
+				</div>
+			}
+			<ValidationMessage For="@(() => Model.Title)" />
+		</div>
+
+		<button type="submit" id="submit" class="btn btn rounded-0">submit</button>
+	</EditForm>
+</div>
+@code {
+
+	[Parameter] public GameDTO Model { get; set; } = new();
+	[Parameter] public string Page { get; set; } = String.Empty;
+	[Parameter] public EventCallback<string> OnChange { get; set; }
+	List<GameDTO> Games { get; set; } = new();
+	List<SimilarGameDTO> SimGames { get; set; } = new();
+	public List<int> SelectedValuesSimilar { get; set; } = new();
+
+	SimilarGameDTO SimilarGame = new();
+	SimilarGameDTO SimilarGameReverse { get; set; } = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		Games = await AdminService.GetAsync<GameDTO>("Game");
+	}
+
+	private async Task OnFormSubmit()
+	{
+		try
+		{
+			if (Page.Equals(PageType.Edit))
+			{
+				//await AdminService.CreateAsync<GameDTO>("game", Model);
+				//Games = await AdminService.GetAsync<GameDTO>("game");
+				foreach (var game in Games)
+				{
+					if (game.Title == Model.Title)
+					{
+						foreach (var film in SelectedValuesSimilar)
+						{
+							await HandleSimilarFilm(game.Id, film);
+						}
+					}
+				}
+			}
+
+			await OnChange.InvokeAsync("");
+		}
+		catch (Exception)
+		{
+			await OnChange.InvokeAsync("Couldn't create/edit/delete");
+		}
+	}
+	private async Task HandleSimilarFilm(int gameId, int simId)
+	{
+		SimilarGameReverse.SimilarGameId = gameId;
+		SimilarGameReverse.GameId = simId;
+		SimilarGame.SimilarGameId = simId;
+		SimilarGame.GameId = gameId;
+		bool existsSimilar = false;
+		bool existsReverse = false;
+		SimGames = await AdminService.GetAsync<SimilarGameDTO>("SimsController");
+
+		foreach (var game in SimGames)
+		{
+			if (game.SimilarGameId == SimilarGameReverse.GameId && game.GameId == SimilarGameReverse.SimilarGameId) { existsReverse = true; }
+			if (game.SimilarGameId == SimilarGame.SimilarGameId && game.GameId == SimilarGame.GameId) { existsSimilar = true; }
+		}
+
+		if (existsReverse == true && existsSimilar == true)
+		{
+			await AdminService.DeleteRefAsync<SimilarGameDTO>("simscontroller", SimilarGame);
+			await AdminService.DeleteRefAsync<SimilarGameDTO>("simscontroller", SimilarGameReverse);
+		}
+		else
+		{
+			await AdminService.CreateAsync<SimilarGameDTO>("simscontroller", SimilarGame);
+			await AdminService.CreateAsync<SimilarGameDTO>("simscontroller", SimilarGameReverse);
+		}
+	}
+}

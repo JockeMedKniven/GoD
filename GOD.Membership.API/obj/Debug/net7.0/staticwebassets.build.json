@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "qBUj81wRPZPwoVpyhFzjDPITb+iPj6dMwKSOm0x26cA=",
+  "Source": "GOD.Membership.API",
+  "BasePath": "_content/GOD.Membership.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

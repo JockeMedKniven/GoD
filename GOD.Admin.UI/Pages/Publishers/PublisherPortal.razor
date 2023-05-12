@@ -1,0 +1,70 @@
+﻿@inject IAdminService AdminService
+
+@if (!string.IsNullOrEmpty(Alert))
+{
+	<div class="d-flex">
+		<div class="alert alert-warning alert-dismissible fade show" role="alert">
+			<strong>@Alert</strong>
+			<button type="button" @onclick="CloseAlert" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	</div>
+}
+
+@if (Navigation == PageType.Create)
+{
+	<PublisherChange Page="@Navigation" OnChange="OnChange"></PublisherChange>
+}
+@if (Navigation == PageType.Delete || Navigation == PageType.Edit)
+{
+	<PublisherChange Page="@Navigation" OnChange="OnChange" Model="Publisher"></PublisherChange>
+}
+
+<div class="d-flex me-1 btn-group" role="group" aria-label="Basic outlined example">
+	<button type="button" @onclick="()=>ChangePageType(PageType.Create)" class="btn btn-outline-primary rounded-0 me-1">Create</button>
+	<button type="button" @onclick="()=>ChangePageType(PageType.Index)" class="btn btn-outline-primary rounded-0 me-1">Index</button>
+</div>
+
+<PublisherIndex OnClick="OnClick" Model="Model"></PublisherIndex>
+
+@code {
+	string Navigation = PageType.Index;
+	string Alert = "";
+	List<PublisherDTO> Model { get; set; } = new();
+	public PublisherDTO Publisher { get; set; } = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		Model = await AdminService.GetAsync<PublisherDTO>($"publisher");
+	}
+
+	void ChangePageType(string pageType)
+	{
+		Navigation = pageType;
+	}
+
+	void CloseAlert()
+	{
+		Alert = "";
+	}
+	async Task OnClick(ClickModel model)
+	{
+		if (model.PageType.Equals(PageType.Edit) || model.PageType.Equals(PageType.Delete))
+			Publisher = await AdminService.SingleAsync<PublisherDTO>($"publisher/{model.Id}") ?? new();
+
+		ChangePageType(model.PageType);
+	}
+
+	async Task OnChange(string alert)
+	{
+		try
+		{
+			Alert = alert;
+			Model = await AdminService.GetAsync<PublisherDTO>("Publisher");
+			ChangePageType(PageType.Index);
+		}
+		catch (Exception)
+		{
+			Alert = "ERROR!";
+		}
+	}
+}

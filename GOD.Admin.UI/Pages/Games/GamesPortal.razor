@@ -1,0 +1,72 @@
+﻿@inject IAdminService AdminService
+
+@if (!string.IsNullOrEmpty(Alert))
+{
+	<div class="d-flex">
+		<div class="alert alert-warning alert-dismissible fade show" role="alert">
+			<strong>@Alert</strong>
+			<button type="button" @onclick="CloseAlert" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	</div>
+}
+
+@if (Navigation == PageType.Create)
+{
+	<ChangeGame Page="@Navigation" OnChange="OnChange"></ChangeGame>
+}
+@if (Navigation == PageType.Delete || Navigation == PageType.Edit)
+{
+	<ChangeGame Page="@Navigation" OnChange="OnChange" Model="Game"></ChangeGame>
+}
+
+<div class="d-flex me-1 btn-group" role="group" aria-label="Basic outlined example">
+	<button type="button" @onclick="()=>ChangePageType(PageType.Create)" class="btn btn-outline-primary rounded-0 me-1">Create</button>
+	<button type="button" @onclick="()=>ChangePageType(PageType.Index)" class="btn btn-outline-primary rounded-0 me-1">Index</button>
+</div>
+
+<GamesIndex OnClick="OnClick" Model="Model"></GamesIndex>
+
+@code {
+	string Navigation = PageType.Index;
+	string Alert = "";
+	//---------------
+	public List<GameDTO> Model { get; set; } = new();
+	public GameDTO Game { get; set; } = new();
+	List<GameGenreDTO> gameGenres { get; set; } = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		Model = await AdminService.GetAsync<GameDTO>($"game");
+	}
+
+	void ChangePageType(string pageType)
+	{
+		Navigation = pageType;
+	}
+
+	void CloseAlert()
+	{
+		Alert = "";
+	}
+	async Task OnClick(ClickModel model)
+	{
+		if (model.PageType.Equals(PageType.Edit) || model.PageType.Equals(PageType.Delete))
+			Game = await AdminService.SingleAsync<GameDTO>($"Game/{model.Id}") ?? new();
+
+		ChangePageType(model.PageType);
+	}
+
+	async Task OnChange(string alert)
+	{
+		try
+		{
+			Alert = alert;
+			Model = await AdminService.GetAsync<GameDTO>("Game");
+			ChangePageType(PageType.Index);
+		}
+		catch (Exception)
+		{
+			Alert = "ERROR!";
+		}
+	}
+}

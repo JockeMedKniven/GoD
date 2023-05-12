@@ -1,0 +1,21 @@
+﻿global using AutoMapper;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.Design;
+global using Microsoft.EntityFrameworkCore.SqlServer;
+global using System.ComponentModel.DataAnnotations;
+global using System;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System.Linq.Expressions;
+global using System.Text;
+global using System.Threading.Tasks;
+global using GOD.Membership.Database.Contexts;
+global using GOD.Membership.Database.Entities;
+global using GOD.Common.DTOs;
+global using GOD.Membership.Database.Services;
+
+//global using GOD.Membership.Database.Services;
+global using Microsoft.AspNetCore.Authorization;
+global using Microsoft.AspNetCore.Http;
+global using Microsoft.AspNetCore.Mvc;
+//global using GOD.Membership.Database.Extensions;

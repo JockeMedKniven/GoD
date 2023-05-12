@@ -1,0 +1,52 @@
+﻿@inject IAdminService AdminService
+
+<div class="d-flex justify-content-center">
+	<EditForm Model="@Model" OnValidSubmit="@OnFormSubmit" class="mb-5 border border-1 border-secondary p-2 w-25">
+		<DataAnnotationsValidator />
+		<h4>@Page Publisher</h4>
+		<div class="mb-3">
+			@if (Page.Equals(PageType.Delete))
+			{
+				<InputText id="title" class="form-control me-2" @bind-Value="Model.Name" disabled placeholder="Name"></InputText>
+			}
+			else
+			{
+				<InputText id="title" class="form-control me-2" @bind-Value="Model.Name" placeholder="Name"></InputText>
+			}
+			<ValidationMessage For="@(() => Model.Name)" />
+		</div>
+		
+		<button type="submit" id="submit" class="btn btn-@(Page.Equals(PageType.Delete) ? "danger" : "primary") rounded-0">submit</button>
+	</EditForm>
+</div>
+@code {
+
+	[Parameter] public PublisherDTO Model { get; set; } = new();
+	[Parameter] public string Page { get; set; } = String.Empty;
+	[Parameter] public EventCallback<string> OnChange { get; set; }
+	List<PublisherDTO> Publishers { get; set; } = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		Publishers = await AdminService.GetAsync<PublisherDTO>("publisher");
+	}
+
+	private async Task OnFormSubmit()
+	{
+		try
+		{
+			if (Page.Equals(PageType.Create))
+				await AdminService.CreateAsync<PublisherDTO>("publisher", Model);
+			else if (Page.Equals(PageType.Edit))
+				await AdminService.EditAsync<PublisherDTO>($"Publisher/{Model.Id}", Model);
+			else if (Page.Equals(PageType.Delete))
+				await AdminService.DeleteAsync<PublisherDTO>($"publisher/{Model.Id}");
+
+			await OnChange.InvokeAsync("");
+		}
+		catch (Exception)
+		{
+			await OnChange.InvokeAsync("Couldn't create/edit/delete the publisher");
+		}
+	}
+}
